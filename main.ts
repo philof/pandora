@@ -65,7 +65,7 @@ export enum TaskStateName {
 // Constants
 // =========================
 // [^\S\r\n] equals to \h
-const TASK_REGEX = /^(?<indentation>\s*)(?<listMarker>[-*+]\s*)?(?<bullet>[◉○✸✿])\s+(?<state>\w+)\s*(?<contentBeforeRatio>.*?)(?:\s*\[(?<completed>\d+)\/(?<total>\d+)\])?(?<restOfLine>.*)$/;
+const TASK_REGEX = /^(?<indentation>\s*)(?<listMarker>[-*+]\s*)?(?<bullet>[◉○✸✿])\s+(?<state>[A-Z]+)\s*(?<contentBeforeRatio>.*?)(?:\s*\[(?<completed>\d+)\/(?<total>\d+)\])?(?<restOfLine>.*)$/;
 const STATE_REGEX = (state: string) => new RegExp(`^\\s*\\*\\s+${state}\\s+`);
 
 // Update regex to use dynamic bullet styles
