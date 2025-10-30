@@ -51,7 +51,7 @@ interface EditorOperations {
 	setLine: (line: number, text: string) => void;
 	getCursor: () => EditorPosition;
 	setCursor: (pos: EditorPosition | number, ch?: number) => void;
-	replaceRange: (text: string, from: EditorPosition) => void;
+	replaceRange: (text: string, from: EditorPosition, to?: EditorPosition) => void;
 }
 
 export enum TaskStateName {
@@ -78,7 +78,7 @@ function escapeRegExp(str: string) {
 	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-const DEFAULT_SETTINGS: OrgModeTaskSettings = {
+export const DEFAULT_SETTINGS: OrgModeTaskSettings = {
 	taskStates: [
 		{ name: 'TODO', color: '#83c5be', isDone: false },
 		{ name: 'DONE', color: '#6c757d', isDone: true },
@@ -338,7 +338,7 @@ export default class OrgModeTaskPlugin extends Plugin {
 			const match = line.match(TASK_REGEX);
 
 			if (match) {
-				const { indentation, listMarker = '', bullet, state: currentState, contentBeforeRatio, completed, total, restOfLine = '' } = match.groups;
+				const { indentation = '', listMarker = '', bullet = '', state: currentState = '', contentBeforeRatio = '', completed, total, restOfLine = '' } = match.groups || {};
 
 				const nextState = this.getNextTaskState(currentState);
 
@@ -495,7 +495,7 @@ export default class OrgModeTaskPlugin extends Plugin {
 			const match = line.match(TASK_REGEX);
 
 			if (match?.groups) {
-				const { indentation, listMarker = '', bullet, state, contentBeforeRatio, completed, total, restOfLine = '' } = match.groups;
+				const { indentation = '', listMarker = '', bullet = '', state = '', contentBeforeRatio = '', completed, total, restOfLine = '' } = match.groups || {};
 
 				const indentLevel = this.getIndentationLevel(indentation);
 				const taskItem: TaskItem = {
@@ -512,7 +512,7 @@ export default class OrgModeTaskPlugin extends Plugin {
 				};
 
 				// Find parent based on indentation
-				while (stack.length > 0 && stack[stack.length - 1].indentation >= indentation) {
+				while (stack.length > 0 && stack[stack.length - 1].indentation >= this.getIndentationLevel(indentation)) {
 					stack.pop();
 				}
 
@@ -754,7 +754,7 @@ export default class OrgModeTaskPlugin extends Plugin {
 							return;
 						}
 
-						const { indentation, bullet, state, completed, total } = match.groups;
+						const { indentation = '', bullet = '', state = '', completed, total } = match.groups || {};
 						const indentLength = indentation?.length || 0;
 						const bulletLength = bullet?.length || 0;
 						const stateLength = state?.length || 0;
